@@ -20,8 +20,8 @@ namespace ASP.NET_core_web_api_part_01.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Student>>> GetStudents()
         {
-           var data=await dbFirstContext.Students.ToListAsync();
-            
+            var data = await dbFirstContext.Students.ToListAsync();
+
             return Ok(data);
 
         }
@@ -29,19 +29,47 @@ namespace ASP.NET_core_web_api_part_01.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Student>> GetStudentById(int id)
         {
-           var data=await dbFirstContext.Students.FindAsync(id);
-            if(data == null)
+            var data = await dbFirstContext.Students.FindAsync(id);
+            if (data == null)
             {
                 return NotFound();
             }
             return Ok(data);
         }
-        //[HttpPost]
-        //public async Task<ActionResult<Student>> CreateStudent(Student student)
-        //{
-        //    await dbFirstContext.Students.AddAsync(student);
-        //    await dbFirstContext.SaveChangesAsync();
-        //    return Ok(student);
-        //}
+        [HttpPost]
+        public async Task<ActionResult<Student>> CreateStudent(Student student)
+        {
+            await dbFirstContext.Students.AddAsync(student);
+            await dbFirstContext.SaveChangesAsync();
+            return Ok(student);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Student>> UpdateStudent(int id, Student std)
+
+        {
+            if (id != std.Id)
+            {
+                return BadRequest();
+            }
+
+            dbFirstContext.Students.Update(std);
+            //dbFirstContext.Entry(std).State=EntityState.Modified;
+            await dbFirstContext.SaveChangesAsync();
+            return Ok(std);
+        }
+        [HttpDelete("{id}")]
+
+        public async Task<ActionResult<Student>> DeleteStudent(int id)
+        {
+            var data=await dbFirstContext.Students.FindAsync(id);
+            if(data == null)
+            {
+                return NotFound(id);
+            }
+            dbFirstContext.Students.Remove(data);
+            await dbFirstContext.SaveChangesAsync();  
+            return Ok(data);
+        }
     }
 }
